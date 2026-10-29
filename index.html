@@ -270,9 +270,58 @@
     .emoji-pop button:hover { background: var(--hover); transform: scale(1.2); }
     @keyframes scalein { from { opacity: 0; transform: scale(.8); } to { opacity: 1; transform: none; } }
 
+    /* ---------- Files ---------- */
+    .bubble.file { padding: 8px 10px 8px 8px; }
+    .file-card { display: flex; align-items: center; gap: 12px; min-width: 200px; max-width: 320px; }
+    .file-ext {
+      width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+      display: grid; place-items: center; color: #fff;
+      font-size: 11px; font-weight: 700; letter-spacing: .3px;
+    }
+    .file-meta { flex: 1; min-width: 0; }
+    .file-name { font-size: 14px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .file-size { font-size: 12px; opacity: .75; }
+    .dl, .cancel {
+      width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0;
+      display: grid; place-items: center; color: inherit; text-decoration: none;
+    }
+    .dl .ic, .cancel .ic { width: 20px; height: 20px; }
+    .bar { height: 4px; border-radius: 2px; background: rgba(128, 128, 128, .3); overflow: hidden; margin-top: 6px; }
+    .bar i { display: block; height: 100%; width: 0; background: var(--primary); border-radius: 2px; transition: width .15s linear; }
+    .bubble.img { padding: 0; overflow: hidden; line-height: 0; width: fit-content; max-width: 300px; }
+    .bubble.img img {
+      display: block; max-width: 100%; max-height: 320px; min-width: 60px; min-height: 40px;
+      object-fit: cover; cursor: zoom-in; transition: filter .2s;
+    }
+    .bubble.img img:hover { filter: brightness(.93); }
+
+    .drop {
+      position: absolute; inset: 0; z-index: 4; pointer-events: none;
+      display: grid; place-items: center; text-align: center;
+      background: color-mix(in srgb, var(--primary) 14%, var(--surface));
+      border: 3px dashed var(--primary); border-radius: 18px;
+      color: var(--primary); font-size: 20px; font-weight: 500;
+      opacity: 0; transform: scale(.98); transition: opacity .15s, transform .15s;
+    }
+    .drop.on { opacity: .96; transform: none; }
+    .drop .ic { width: 56px; height: 56px; margin: 0 auto 8px; }
+
+    .lightbox {
+      position: fixed; inset: 0; z-index: 45; background: rgba(0, 0, 0, .86);
+      display: grid; place-items: center; animation: fadein .2s;
+    }
+    .lightbox.hidden { display: none; }
+    .lightbox img { max-width: 92vw; max-height: 86vh; border-radius: 8px; animation: scalein .25s var(--ease); }
+    .lb-bar {
+      position: absolute; top: 0; left: 0; right: 0; display: flex; align-items: center; gap: 8px;
+      padding: 12px 16px; color: #fff; background: linear-gradient(rgba(0, 0, 0, .55), transparent);
+    }
+    .lb-bar span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .lb-bar a, .lb-bar button { color: #fff; width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; text-decoration: none; }
+
     /* ---------- Snackbar ---------- */
     .snack {
-      position: fixed; left: 24px; bottom: 24px; z-index: 40;
+      position: fixed; left: 24px; bottom: 92px; z-index: 40;
       min-width: 288px; max-width: calc(100vw - 48px);
       background: #303030; color: #f1f1f1;
       padding: 14px 16px; border-radius: 6px; font-size: 14px; box-shadow: var(--elev2);
@@ -321,7 +370,7 @@
       .app.nav-open .sidebar { transform: none; }
       .app.nav-open .scrim { opacity: 1; pointer-events: auto; }
       .side-inner { width: 100%; }
-      .snack { left: 8px; right: 8px; bottom: 8px; max-width: none; }
+      .snack { left: 8px; right: 8px; bottom: 84px; max-width: none; }
     }
 
     @media (prefers-reduced-motion: reduce) {
@@ -369,6 +418,7 @@
       <!-- Chat -->
       <section class="chat">
         <div class="progress on" id="progress"></div>
+        <div class="drop" id="drop"><div><svg class="ic" viewBox="0 0 24 24"><path d="M19.35 10.04A7.49 7.49 0 0 0 12 4C9.11 4 6.6 5.64 5.35 8.04A5.994 5.994 0 0 0 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>Drop files here to send</div></div>
         <header class="chat-head">
           <div class="avatar group"><svg class="ic" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>
           <div class="who">
@@ -383,6 +433,10 @@
 
         <form class="composer" id="form" autocomplete="off">
           <div class="field">
+            <input type="file" id="fileInput" multiple hidden />
+            <button type="button" class="tool ripple" id="attachBtn" title="Attach files or documents" aria-label="Attach files">
+              <svg class="ic" viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5a2.5 2.5 0 0 0 5 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/></svg>
+            </button>
             <button type="button" class="tool ripple" id="emojiBtn" title="Emoji" aria-label="Emoji">
               <svg class="ic" viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/></svg>
             </button>
@@ -398,6 +452,16 @@
         </form>
       </section>
     </div>
+  </div>
+
+  <!-- Image viewer -->
+  <div class="lightbox hidden" id="lightbox">
+    <div class="lb-bar">
+      <span id="lbName"></span>
+      <a id="lbDl" title="Download" download><svg class="ic" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg></a>
+      <button id="lbClose" title="Close"><svg class="ic" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+    </div>
+    <img id="lbImg" alt="" />
   </div>
 
   <div class="snack" id="snack" role="status"></div>
