@@ -1,19 +1,44 @@
-# LAN Messenger (PC1 <-> PC2)
+# LAN Chat (PC1 <-> PC2) - with file sharing
 
-Simple chat built with HTML, CSS and JavaScript. No database; messages live in memory only.
+Google-style chat built with HTML, CSS and JavaScript. No database.
+Text messages live in memory; shared files are stored in a temporary folder on PC1.
+
+## Files (put all 3 in one folder)
+
+- `server.js`
+- `index.html` (the CSS is inside this file)
+- `app.js`
 
 ## Setup
 
-1. Install Node.js (https://nodejs.org) on **PC1** (the computer that will host the chat).
-2. Copy these files into one folder: `server.js`, `index.html`, `style.css`, `app.js`.
-3. On PC1, open a terminal in that folder and run:
+1. Install Node.js (https://nodejs.org) on **PC1** (the computer that hosts the chat).
+2. On PC1, open a terminal in the folder and run:
 
        node server.js
 
-   It prints something like `http://192.168.1.10:3000` – that is PC1's IP address.
-4. On **PC1** open `http://localhost:3000`.
-5. On **PC2** open `http://<PC1-IP>:3000` (e.g. `http://192.168.1.10:3000`).
-6. Enter a name on each PC and start chatting.
+   It prints something like `http://192.168.1.10:3000` - that is PC1's IP address.
+3. On **PC1** open `http://localhost:3000`.
+4. On **PC2** open `http://<PC1-IP>:3000` (e.g. `http://192.168.1.10:3000`).
+5. Enter a name on each PC and start chatting.
+
+## Sending files and documents
+
+- Click the paperclip button, or **drag & drop** files onto the chat, or **paste** (Ctrl+V) an image.
+- Any file type works (PDF, Word, Excel, ZIP, photos, ...). You can send several at once.
+- Pictures show as a preview; click one to open the viewer. Other files show as a card with a download button.
+- A progress bar shows while uploading, and you can cancel it.
+- Default limit is 100 MB per file. Change it when starting the server:
+
+      MAX_MB=500 node server.js            (Mac / Linux)
+      set MAX_MB=500 && node server.js     (Windows CMD)
+
+- The server prints where shared files are stored. They are kept only until the OS cleans its
+  temporary folder; the chat history itself is cleared whenever the server restarts.
+
+## Other features
+
+- "Active now" list, typing indicator, emoji picker, quick like, search, dark / light mode
+- Click your avatar (top right) to change your name
 
 ## If PC2 can't connect
 
@@ -22,8 +47,3 @@ Simple chat built with HTML, CSS and JavaScript. No database; messages live in m
   or allow inbound TCP port 3000.
 - Check PC1's IP with `ipconfig` (Windows) or `ifconfig` / `ip a` (Mac/Linux).
 - To use another port: `PORT=4000 node server.js` (Windows CMD: `set PORT=4000 && node server.js`).
-
-## Notes
-
-- Restarting the server clears the chat history.
-- Any extra device on the same network can join the same way.
